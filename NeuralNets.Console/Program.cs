@@ -36,6 +36,6 @@ network.Connect(hidden[1], outputs[0], 0.23f);
 network.Connect(hidden[1], outputs[1], 0.23f);
 network.Connect(hidden[2], outputs[1], 0.23f);
 
-float[] predictions = network.GetPrediction(new List<float>() { 8, 2 });
+float[] predictions = network.Predict(new float[] { 8, 2 });
 
 Console.WriteLine("Network built");

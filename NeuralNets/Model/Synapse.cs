@@ -12,14 +12,17 @@ namespace NeuralNets.Model
         public Neuron End { get; set; }
         public float Weight { get; set; }
         public float Output => Start.Output * Weight;
-        public Synapse(Neuron a, Neuron b, float weight)
+
+        public Synapse(Neuron start, Neuron end) : this(start, end, 1) { }
+
+        public Synapse(Neuron start, Neuron end, float weight)
         {
-            Start = a;
-            End = b;
+            Start = start;
+            End = end;
             Weight = weight;
 
-            a.Succesors.Add(this);
-            b.Predecesors.Add(this);
+            start.Succesors.Add(this);
+            end.Predecesors.Add(this);
         }
     }
 }
