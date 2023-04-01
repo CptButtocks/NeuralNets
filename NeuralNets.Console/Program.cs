@@ -21,7 +21,7 @@ List<Neuron> outputs = new()
     new Neuron()
 };
 
-Network network = new Network(inputs, outputs, Activation.Linear, Aggregation.Sum);
+Network network = new Network(inputs, outputs, Activation.Linear, Aggregation.Average);
 network.AddRange(hidden);
 
 // Layer 1 -->  2
