@@ -1,4 +1,5 @@
 ﻿// See https://aka.ms/new-console-template for more information
+using NeuralNets.Console.Trainers.Unsupervised;
 using NeuralNets.Functions;
 using NeuralNets.Model;
 
@@ -37,5 +38,7 @@ network.Connect(hidden[1], outputs[1], 0.23f);
 network.Connect(hidden[2], outputs[1], 0.23f);
 
 float[] predictions = network.Predict(new float[] { 8, 2 });
+
+UnsupervisedTest test = new(1, 10, network);
 
 Console.WriteLine("Network built");

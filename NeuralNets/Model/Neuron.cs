@@ -10,7 +10,7 @@ namespace NeuralNets.Model
     public class Neuron
     {
         private float? _output { get; set; }
-        public int Id { get; set; }
+        public int Id { get; set; } = -1;
         public float Output => _output ?? GetOutput();
         public float[] Inputs => Predecesors.Select(s => s.Start.Output).ToArray();
         public List<Synapse> Predecesors { get; } = new List<Synapse>();
@@ -43,7 +43,14 @@ namespace NeuralNets.Model
         }
         internal Neuron DeepCopy()
         {
-            return new Neuron(_activation, _aggregation);
+            Neuron neuron = new Neuron(_activation, _aggregation);
+            neuron.Id = Id;
+            return neuron;
+        }
+
+        public override string ToString()
+        {
+            return $"{Id}";
         }
     }
 }

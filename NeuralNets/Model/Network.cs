@@ -10,6 +10,7 @@ namespace NeuralNets.Model
 {
     public class Network : IEnumerable<Synapse>, IEnumerable<Neuron>
     {
+        private int _counter = 0;
         private List<Neuron> _inputs { get; set; } = new();
         private List<Neuron> _outputs { get; set; } = new();
         private List<Neuron> _hidden { get; set; } = new();
@@ -19,11 +20,22 @@ namespace NeuralNets.Model
         private Func<float[], float> _aggregation { get; set; }
         public Network(IEnumerable<Neuron> inputs, IEnumerable<Neuron> outputs, Func<float, float> activation, Func<float[], float> aggregation)
         {
-            _inputs = inputs.ToList();
-            _outputs = outputs.ToList();
+            foreach(Neuron input in inputs)
+            {
+                input.Id = _counter;
+                _inputs.Add(input);
+                _neurons.Add(input);
+                _counter++;
+            }
 
-            _neurons.AddRange(inputs);
-            _neurons.AddRange(outputs);
+            foreach (Neuron output in outputs)
+            {
+                output.Id = _counter;
+                _outputs.Add(output);
+                _neurons.Add(output);
+                _counter++;
+            }
+
             _activation = activation;
             _aggregation = aggregation;
         }
@@ -32,7 +44,12 @@ namespace NeuralNets.Model
 
         public void Add(Neuron neuron)
         {
-            neuron.Id = _neurons.Count;
+            if(neuron.Id == -1)
+            {
+                neuron.Id = _counter;
+                _counter++;
+            }
+                
             neuron.SetActivation(_activation);
             neuron.SetAggregation(_aggregation);
             _neurons.Add(neuron);

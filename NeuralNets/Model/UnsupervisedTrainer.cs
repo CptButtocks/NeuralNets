@@ -17,6 +17,7 @@ namespace NeuralNets.Model
             MutationCutOffPercentage = mutationCutOffPercentage;
             Population = population;
             InitialNetwork = network;
+            InitializePopulation();
         }
 
         public abstract float GetFitness(float[] inputs, float[] outputs);
@@ -27,7 +28,7 @@ namespace NeuralNets.Model
             {
                 Network network = InitialNetwork.DeepCopy();
                 foreach (Synapse synapse in network)
-                    synapse.Weight = 1f / random.Next(0, 100);
+                    synapse.Weight = 0.01f * random.Next(0, 100);
                 _population.Add(network);
             }
         }

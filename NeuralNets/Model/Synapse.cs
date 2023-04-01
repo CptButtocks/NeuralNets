@@ -24,5 +24,10 @@ namespace NeuralNets.Model
             start.Succesors.Add(this);
             end.Predecesors.Add(this);
         }
+
+        public override string ToString()
+        {
+            return $"{Start} --> {End} @ {Weight}";
+        }
     }
 }
