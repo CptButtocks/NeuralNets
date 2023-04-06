@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NeuralNets.Model
+namespace NeuralNets.Model.Neural
 {
     public class Synapse
     {

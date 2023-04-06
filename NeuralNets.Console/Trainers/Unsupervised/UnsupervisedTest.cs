@@ -1,19 +1,17 @@
 ﻿using NeuralNets.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using NeuralNets.Model.Configuration;
+using NeuralNets.Model.Neural;
+using NeuralNets.Model.Trainers;
 
 namespace NeuralNets.Console.Trainers.Unsupervised
 {
     public class UnsupervisedTest : UnsupervisedTrainer
     {
-        public UnsupervisedTest(float mutationCutOffPercentage, int population, Network network) : base(mutationCutOffPercentage, population, network)
+        public UnsupervisedTest(Network network, UnsupervisedTrainingConfiguration configuration) : base(network, configuration)
         {
         }
 
-        public override float GetFitness(float[] inputs, float[] outputs)
+        public override float GetFitness(float[][] inputs, float[][] outputs)
         {
             return 0f;
         }
