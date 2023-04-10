@@ -11,9 +11,9 @@ namespace NeuralNets.Model.Neural
     public class Network : IEnumerable<Synapse>, IEnumerable<Neuron>
     {
         private int _counter = 0;
-        private List<Neuron> _inputs { get; set; } = new();
-        private List<Neuron> _outputs { get; set; } = new();
-        private List<Neuron> _hidden { get; set; } = new();
+        private Layer _inputs { get; set; } = new();
+        private Layer _outputs { get; set; } = new();
+        private List<Layer> _hidden { get; set; } = new();
         private List<Neuron> _neurons { get; set; } = new();
         private List<Synapse> _synapses { get; set; } = new();
         private Func<float, float> _activation { get; set; }
@@ -38,6 +38,23 @@ namespace NeuralNets.Model.Neural
 
             _activation = activation;
             _aggregation = aggregation;
+        }
+
+        public Layer this[int index]
+        {
+            get
+            {
+                if (index == 0) return _inputs;
+                else if (index > 0 && index < _hidden.Count) return _hidden[index - 1];
+                else return _outputs;
+            }
+
+            set
+            {
+                if (index == 0) _inputs = value;
+                else if (index > 0 && index < _hidden.Count) _hidden[index - 1] = value;
+                else _outputs = value;
+            }
         }
 
         public Neuron Get(int id) => _neurons.Where(n => n.Id == id).First();
