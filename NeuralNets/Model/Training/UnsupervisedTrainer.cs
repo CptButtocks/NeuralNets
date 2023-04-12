@@ -97,7 +97,7 @@ namespace NeuralNets.Model.Trainers
             for (int i = 0; i < _configuration.Population; i++)
             {
                 Network network = InitialNetwork.DeepCopy();
-                foreach (Synapse synapse in network)
+                foreach (Connection synapse in (IEnumerable<Connection>)network)
                     synapse.Weight = 0.01f * random.Next(0, 100);
                 _population.Add(new Genome(network, 1));
             }

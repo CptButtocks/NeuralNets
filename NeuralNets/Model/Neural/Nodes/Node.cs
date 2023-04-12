@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NeuralNets.Model.Neural
+namespace NeuralNets.Model.Neural.Nodes
 {
     public class Node
     {
@@ -22,7 +22,7 @@ namespace NeuralNets.Model.Neural
         /// <summary>
         /// The output of the node
         /// </summary>
-        public float Output
+        public virtual float Output
         {
             get
             {

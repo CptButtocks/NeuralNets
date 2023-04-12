@@ -1,4 +1,7 @@
-﻿using System;
+﻿using NeuralNets.Functions;
+using NeuralNets.Model.Neural.Nodes;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,71 +9,60 @@ using System.Threading.Tasks;
 
 namespace NeuralNets.Model.Neural
 {
-    public class Network
+    public class Network : IEnumerable<Node>, IEnumerable<Connection>
     {
         public int LayerCount => _hidden.Count + 2;
         public int NodeCount => _nodes.Count;
         private List<Node> _nodes { get; set; } = new();
-        private List<Layer> _hidden { get; set; } = new();
-        private Layer _inputs { get; set; } = new(0);
-        private Layer _outputs { get; set; } = new(1);
+        private List<Layer<Node>> _hidden { get; set; } = new();
+        private Layer<InputNode> _inputs { get; set; } = new(0);
+        private Layer<Node> _outputs { get; set; } = new(1);
         private List<Connection> _connections = new();
+
+        /// <summary>
+        /// The activation function applied to the aggregated inputs
+        /// </summary>
+        private Func<float, float> _activationFunction { get; set; } = Activation.ReLU;
+
+        /// <summary>
+        /// The aggregation function applied to the inputs
+        /// </summary>
+        private Func<float[], float> _aggregationFunction { get; set; } = Aggregation.Sum;
 
         public Network(int layers)
         {
             for (int i = 0; i < layers; i++)
             {
-                Layer layer = new Layer(i + 1);
+                Layer<Node> layer = new Layer<Node>(i + 1);
                 _hidden.Add(layer);
             }
         }
 
-        public Layer this[int index]
+        public Network(Layer<InputNode> inputs, Layer<Node> outputs, Func<float, float> activationFunction, Func<float[], float> aggregationFunction)
         {
-            get
-            {
-                if (index == 0)
-                    return _inputs;
-                else if (index < LayerCount)
-                    return _hidden[index - 1];
-                else
-                    return _outputs;
-            }
-
-            set
-            {
-                if (index == 0)
-                    _inputs = value;
-                else if (index < LayerCount)
-                    _hidden[index - 1] = value;
-                else
-                    _outputs = value;
-            }
+            _inputs = inputs;
+            _outputs = outputs;
+            _activationFunction = activationFunction;
+            _aggregationFunction = aggregationFunction;
         }
 
-        public void Add(Layer layer)
+        public void Add(Layer<Node> layer)
         {
             layer.Depth = _hidden.Count + 1;
             _hidden.Add(layer);
 
-            foreach(Node node in layer)
+            foreach(InputNode node in layer)
                 _nodes.Add(node);
         }
 
         public void Add(Node node, int depth)
         {
-            if (depth < 0 || depth >= LayerCount)
-                throw new IndexOutOfRangeException($"The given depth: {depth} is below 0 or exceeds the layer count: {LayerCount}");
+            _hidden[depth].Add(node);
+        }
 
-            node.Layer = depth;
-            if (depth == 0)
-                _inputs.Add(node);
-            else if (depth < LayerCount)
-                _hidden[depth - 1].Add(node);
-            else
-                _outputs.Add(node);
-
-            _nodes.Add(node);
+        public void AddRange(IEnumerable<Node> nodes, int depth)
+        {
+            _hidden[depth].AddRange(nodes);
         }
 
         public void Connect(Node start, Node end)
@@ -104,16 +96,24 @@ namespace NeuralNets.Model.Neural
             Connect(start, end, weight, bias);
         }
 
+        public float[] Predict(float[] inputs)
+        {
+            for (int i = 0; i < inputs.Length; i++)
+                _inputs[i].SetInput(inputs[i]);
+
+            return _outputs.Select(o => o.Output).ToArray();
+        }
+
         public Network DeepCopy()
         {
             Network network = new(_hidden.Count);
 
-            foreach (Node input in _inputs)
+            foreach (InputNode input in _inputs)
                 network.Add(input.DeepCopy(), 0);
-            foreach (Node output in _outputs)
+            foreach (InputNode output in _outputs)
                 network.Add(output.DeepCopy(), LayerCount - 1);
 
-            foreach(Layer layer in _hidden)
+            foreach(Layer<Node> layer in _hidden)
             {
                 foreach(Node node in layer)
                 {
@@ -126,5 +126,11 @@ namespace NeuralNets.Model.Neural
 
             return network;
         }
+
+        IEnumerator IEnumerable.GetEnumerator() => _nodes.GetEnumerator();
+
+        IEnumerator<Connection> IEnumerable<Connection>.GetEnumerator() => _connections.GetEnumerator();
+
+        IEnumerator<Node> IEnumerable<Node>.GetEnumerator() => _nodes.GetEnumerator();
     }
 }

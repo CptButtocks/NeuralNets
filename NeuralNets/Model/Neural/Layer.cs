@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NeuralNets.Model.Neural.Nodes;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace NeuralNets.Model.Neural
 {
-    public class Layer : IEnumerable<Node>
+    public class Layer<T> : IEnumerable<T> where T : Node
     {
-        private List<Node> _nodes = new();
+        private List<T> _nodes = new();
 
         /// <summary>
         /// The depth of the layer within the network
@@ -21,10 +22,13 @@ namespace NeuralNets.Model.Neural
             Depth = depth;
         }
 
-        public void Add(Node node) => _nodes.Add(node);
-        public void Insert(int index, Node node) => _nodes.Insert(index, node);
+        public T this[int index] => _nodes[index];
 
-        public IEnumerator<Node> GetEnumerator() => _nodes.GetEnumerator();
+        public void Add(T node) => _nodes.Add(node);
+        public void AddRange(IEnumerable<T> nodes) => _nodes.AddRange(nodes);
+        public void Insert(int index, T node) => _nodes.Insert(index, node);
+
+        public IEnumerator<T> GetEnumerator() => _nodes.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => _nodes.GetEnumerator();
     }
