@@ -18,7 +18,7 @@ namespace NeuralNets.Model.Neural
         private Layer<InputNode> _inputs { get; set; } = new(0);
         private Layer<Node> _outputs { get; set; } = new(1);
         private List<Connection> _connections = new();
-
+        private int _nodeCounter = 0;
         /// <summary>
         /// The activation function applied to the aggregated inputs
         /// </summary>
@@ -28,6 +28,11 @@ namespace NeuralNets.Model.Neural
         /// The aggregation function applied to the inputs
         /// </summary>
         private Func<float[], float> _aggregationFunction { get; set; } = Aggregation.Sum;
+
+        public Layer<InputNode> Inputs => _inputs;
+        public Layer<Node> Outputs => _outputs;
+        public List<Layer<Node>> Hidden => _hidden;
+        public List<Connection> Connections => _connections;
 
         public Network(int layers)
         {
@@ -40,8 +45,12 @@ namespace NeuralNets.Model.Neural
 
         public Network(Layer<InputNode> inputs, Layer<Node> outputs, Func<float, float> activationFunction, Func<float[], float> aggregationFunction)
         {
-            _inputs = inputs;
-            _outputs = outputs;
+            foreach (InputNode input in inputs)
+                AddInput(input);
+
+            foreach (Node output in outputs)
+                AddOutput(output);
+
             _activationFunction = activationFunction;
             _aggregationFunction = aggregationFunction;
         }
@@ -51,18 +60,56 @@ namespace NeuralNets.Model.Neural
             layer.Depth = _hidden.Count + 1;
             _hidden.Add(layer);
 
-            foreach(InputNode node in layer)
-                _nodes.Add(node);
+            foreach (Node node in layer.ToList())
+                Add(node, layer.Depth - 1);
         }
 
         public void Add(Node node, int depth)
         {
+            node.Id = _nodeCounter;
+            node.ActivationFunction = _activationFunction;
+            node.AggregationFunction = _aggregationFunction;
+            node.Layer = depth + 1;
             _hidden[depth].Add(node);
+            _nodes.Add(node);
+            _nodeCounter++;
+        }
+
+        public void AddOutput(Node node)
+        {
+            node.Id = _nodeCounter;
+            _outputs.Add(node);
+            _nodes.Add(node);
+            _nodeCounter++;
+        }
+
+        public void AddInput(InputNode node)
+        {
+            node.Id = _nodeCounter;
+            node.Layer = 0;
+            _inputs.Add(node);
+            _nodes.Add(node);
+            _nodeCounter++;
         }
 
         public void AddRange(IEnumerable<Node> nodes, int depth)
         {
             _hidden[depth].AddRange(nodes);
+        }
+
+        public void Remove(Node node)
+        {
+            _nodes.Remove(node);
+            Layer<Node> layer = _hidden[node.Layer - 1];
+            layer.Remove(node);
+            _connections.RemoveAll(c => c.Start.Id == node.Id || c.End.Id == node.Id);
+        }
+
+        public void Remove(Connection connection)
+        {
+            _connections.Remove(connection);
+            connection.Start.Children.Remove(connection);
+            connection.End.Parents.Remove(connection);
         }
 
         public void Connect(Node start, Node end)
@@ -109,15 +156,15 @@ namespace NeuralNets.Model.Neural
             Network network = new(_hidden.Count);
 
             foreach (InputNode input in _inputs)
-                network.Add(input.DeepCopy(), 0);
-            foreach (InputNode output in _outputs)
-                network.Add(output.DeepCopy(), LayerCount - 1);
+                network.AddInput(input.DeepCopy());
+            foreach (Node output in _outputs)
+                network.AddOutput(output.DeepCopy());
 
             foreach(Layer<Node> layer in _hidden)
             {
                 foreach(Node node in layer)
                 {
-                    network.Add(node.DeepCopy(), layer.Depth);
+                    network.Add(node.DeepCopy(), layer.Depth - 1);
                 }
             }
 

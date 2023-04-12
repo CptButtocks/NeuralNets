@@ -16,7 +16,7 @@ namespace NeuralNets.Model.Neural
         /// The depth of the layer within the network
         /// </summary>
         public int Depth { get; set; }
-
+        public int Count => _nodes.Count;
         public Layer(int depth)
         {
             Depth = depth;
@@ -27,7 +27,7 @@ namespace NeuralNets.Model.Neural
         public void Add(T node) => _nodes.Add(node);
         public void AddRange(IEnumerable<T> nodes) => _nodes.AddRange(nodes);
         public void Insert(int index, T node) => _nodes.Insert(index, node);
-
+        public void Remove(T node) => _nodes.Remove(node);
         public IEnumerator<T> GetEnumerator() => _nodes.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => _nodes.GetEnumerator();

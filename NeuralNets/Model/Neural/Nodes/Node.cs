@@ -57,7 +57,7 @@ namespace NeuralNets.Model.Neural.Nodes
         public List<Connection> Children { get; set; } = new();
 
 
-        public Node DeepCopy()
+        public virtual Node DeepCopy()
         {
             return new Node()
             {

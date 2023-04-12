@@ -18,5 +18,15 @@ namespace NeuralNets.Model.Neural.Nodes
         }
 
         public void SetInput(float value) => _value = value;
+
+        new public InputNode DeepCopy()
+        {
+            return new InputNode(_value)
+            {
+                Id = Id,
+                ActivationFunction = ActivationFunction,
+                AggregationFunction = AggregationFunction,
+            };
+        }
     }
 }

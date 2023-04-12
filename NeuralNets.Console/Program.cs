@@ -11,7 +11,7 @@ Layer<InputNode> inputs = new Layer<InputNode>(0)
     new InputNode(1)
 };
 
-List<Node> hidden = new(1)
+Layer<Node> hidden = new(1)
 {
     new Node(),
     new Node(),
@@ -25,19 +25,19 @@ Layer<Node> outputs = new(2)
 };
 
 Network network = new Network(inputs, outputs, Activation.Linear, Aggregation.Average);
-network.AddRange(hidden, 1);
+network.Add(hidden);
 
 // Layer 1 -->  2
-network.Connect(inputs[0], hidden[0], 0.23f, 0.23f);
-network.Connect(inputs[1], hidden[0], 0.23f, 0.23f);
-network.Connect(inputs[1], hidden[1], 0.23f, 0.23f);
-network.Connect(inputs[1], hidden[2], 0.23f, 0.23f);
+network.Connect(inputs[0], hidden[0]);
+network.Connect(inputs[1], hidden[0]);
+network.Connect(inputs[1], hidden[1]);
+network.Connect(inputs[1], hidden[2]);
 
 // Layer 2 --> 3
-network.Connect(hidden[0], outputs[0], 0.23f, 0.23f);
-network.Connect(hidden[1], outputs[0], 0.23f, 0.23f);
-network.Connect(hidden[1], outputs[1], 0.23f, 0.23f);
-network.Connect(hidden[2], outputs[1], 0.23f, 0.23f);
+network.Connect(hidden[0], outputs[0]);
+network.Connect(hidden[1], outputs[0]);
+network.Connect(hidden[1], outputs[1]);
+network.Connect(hidden[2], outputs[1]);
 
 float[] predictions = network.Predict(new float[] { 8, 2 });
 
