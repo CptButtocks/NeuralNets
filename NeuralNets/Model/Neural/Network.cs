@@ -1,6 +1,4 @@
-﻿using NeuralNets.Abstraction;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,130 +6,125 @@ using System.Threading.Tasks;
 
 namespace NeuralNets.Model.Neural
 {
-    public class Network : IEnumerable<Synapse>, IEnumerable<Neuron>
+    public class Network
     {
-        private int _counter = 0;
-        private Layer _inputs { get; set; } = new();
-        private Layer _outputs { get; set; } = new();
+        public int LayerCount => _hidden.Count + 2;
+        public int NodeCount => _nodes.Count;
+        private List<Node> _nodes { get; set; } = new();
         private List<Layer> _hidden { get; set; } = new();
-        private List<Neuron> _neurons { get; set; } = new();
-        private List<Synapse> _synapses { get; set; } = new();
-        private Func<float, float> _activation { get; set; }
-        private Func<float[], float> _aggregation { get; set; }
-        public Network(IEnumerable<Neuron> inputs, IEnumerable<Neuron> outputs, Func<float, float> activation, Func<float[], float> aggregation)
+        private Layer _inputs { get; set; } = new(0);
+        private Layer _outputs { get; set; } = new(1);
+        private List<Connection> _connections = new();
+
+        public Network(int layers)
         {
-            foreach(Neuron input in inputs)
+            for (int i = 0; i < layers; i++)
             {
-                input.Id = _counter;
-                _inputs.Add(input);
-                _neurons.Add(input);
-                _counter++;
+                Layer layer = new Layer(i + 1);
+                _hidden.Add(layer);
             }
-
-            foreach (Neuron output in outputs)
-            {
-                output.Id = _counter;
-                _outputs.Add(output);
-                _neurons.Add(output);
-                _counter++;
-            }
-
-            _activation = activation;
-            _aggregation = aggregation;
         }
 
         public Layer this[int index]
         {
             get
             {
-                if (index == 0) return _inputs;
-                else if (index > 0 && index < _hidden.Count) return _hidden[index - 1];
-                else return _outputs;
+                if (index == 0)
+                    return _inputs;
+                else if (index < LayerCount)
+                    return _hidden[index - 1];
+                else
+                    return _outputs;
             }
 
             set
             {
-                if (index == 0) _inputs = value;
-                else if (index > 0 && index < _hidden.Count) _hidden[index - 1] = value;
-                else _outputs = value;
+                if (index == 0)
+                    _inputs = value;
+                else if (index < LayerCount)
+                    _hidden[index - 1] = value;
+                else
+                    _outputs = value;
             }
         }
 
-        public Neuron Get(int id) => _neurons.Where(n => n.Id == id).First();
-
-        public void Add(Neuron neuron)
+        public void Add(Layer layer)
         {
-            if(neuron.Id == -1)
+            layer.Depth = _hidden.Count + 1;
+            _hidden.Add(layer);
+
+            foreach(Node node in layer)
+                _nodes.Add(node);
+        }
+
+        public void Add(Node node, int depth)
+        {
+            if (depth < 0 || depth >= LayerCount)
+                throw new IndexOutOfRangeException($"The given depth: {depth} is below 0 or exceeds the layer count: {LayerCount}");
+
+            node.Layer = depth;
+            if (depth == 0)
+                _inputs.Add(node);
+            else if (depth < LayerCount)
+                _hidden[depth - 1].Add(node);
+            else
+                _outputs.Add(node);
+
+            _nodes.Add(node);
+        }
+
+        public void Connect(Node start, Node end)
+        {
+            Random random = new Random();
+            float weight = (float)random.NextDouble();
+            float bias = (float)random.NextDouble();
+
+            Connect(start, end, weight, bias);
+        }
+
+        public void Connect(Node start, Node end, float weight, float bias)
+        {
+            Connection connection = new Connection(start, end, weight, bias);
+            _connections.Add(connection);
+        }
+
+        protected void Connect(int startId, int endId, float weight, float bias)
+        {
+            if (startId == endId)
+                throw new ArgumentException("Nodes with identical ID's cannnot be connected");
+            Node? start = _nodes.Where(n => n.Id == startId).FirstOrDefault();
+            if (start == null)
+                throw new ArgumentNullException($"Start node with ID {startId} cannot be found");
+
+            Node? end = _nodes.Where(n => n.Id == endId).FirstOrDefault();
+
+            if (end == null)
+                throw new ArgumentNullException($"End node with ID {endId} cannot be found");
+
+            Connect(start, end, weight, bias);
+        }
+
+        public Network DeepCopy()
+        {
+            Network network = new(_hidden.Count);
+
+            foreach (Node input in _inputs)
+                network.Add(input.DeepCopy(), 0);
+            foreach (Node output in _outputs)
+                network.Add(output.DeepCopy(), LayerCount - 1);
+
+            foreach(Layer layer in _hidden)
             {
-                neuron.Id = _counter;
-                _counter++;
+                foreach(Node node in layer)
+                {
+                    network.Add(node.DeepCopy(), layer.Depth);
+                }
             }
-                
-            neuron.SetActivation(_activation);
-            neuron.SetAggregation(_aggregation);
-            _neurons.Add(neuron);
-            _hidden.Add(neuron);
-        }
 
-        public void AddRange(IEnumerable<Neuron> neurons)
-        {
-            foreach (Neuron neuron in neurons)
-                Add(neuron);
-        }
-
-        public void Add(Neuron start, Neuron end, float weight)
-        {
-            start.SetActivation(_activation);
-            end.SetActivation(_activation);
-            start.SetAggregation(_aggregation);
-            end.SetAggregation(_aggregation);
-            _neurons.Add(start);
-            _neurons.Add(end);
-            _hidden.Add(start);
-            _hidden.Add(end);
-            _synapses.Add(new Synapse(start, end, weight));
-        }
-
-        public void Connect(Neuron start, Neuron end, float weight)
-        {
-            Neuron startNeuron = _neurons[_neurons.IndexOf(start)];
-            Neuron endNeuron = _neurons[_neurons.IndexOf(end)];
-            _synapses.Add(new Synapse(startNeuron, endNeuron, weight));
-        }
-
-        public float[] Predict(float[] inputs)
-        {
-            if (inputs.Length != _inputs.Count)
-                throw new ArgumentException($"Number of inputs: {inputs.Length} must be equal to the number of input neurons: {_inputs.Count}");
-
-            for (int i = 0; i < inputs.Length; i++)
-                _inputs[i].SetOutput(inputs[i]);
-
-            return _outputs.Select(o => o.Output).ToArray();
-        }
-
-        internal Network DeepCopy()
-        {
-            IEnumerable<Neuron> inputs = _inputs.Select(n => n.DeepCopy());
-            IEnumerable<Neuron> outputs = _outputs.Select(n => n.DeepCopy());
-            Network network = new Network(inputs, outputs, _activation, _aggregation);
-            network.AddRange(_hidden.Select(n => n.DeepCopy()));
-
-            foreach(Synapse synapse in _synapses)
-            {
-                Neuron start = network.Get(synapse.Start.Id);
-                Neuron end = network.Get(synapse.End.Id);
-
-                network.Connect(start, end, synapse.Weight);
-            }
+            foreach(Connection connection in _connections)
+                network.Connect(connection.Start.Id, connection.End.Id, connection.Weight, connection.Bias);
 
             return network;
         }
-
-        public IEnumerator<Synapse> GetEnumerator() => _synapses.GetEnumerator();
-
-        IEnumerator IEnumerable.GetEnumerator() => _neurons.GetEnumerator();
-
-        IEnumerator<Neuron> IEnumerable<Neuron>.GetEnumerator() => _neurons.GetEnumerator();
     }
 }

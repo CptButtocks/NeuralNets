@@ -7,45 +7,25 @@ using System.Threading.Tasks;
 
 namespace NeuralNets.Model.Neural
 {
-    public class Layer : IEnumerable<Neuron>
+    public class Layer : IEnumerable<Node>
     {
-        private List<Neuron> _neurons;
+        private List<Node> _nodes = new();
 
-        public int Count => _neurons.Count;
+        /// <summary>
+        /// The depth of the layer within the network
+        /// </summary>
+        public int Depth { get; set; }
 
-        public Layer()
+        public Layer(int depth)
         {
-            _neurons = new List<Neuron>();
+            Depth = depth;
         }
 
-        public Neuron this[int index]
-        {
-            get => _neurons[index]; set => _neurons[index] = value; 
-        }
+        public void Add(Node node) => _nodes.Add(node);
+        public void Insert(int index, Node node) => _nodes.Insert(index, node);
 
-        public Layer(IEnumerable<Neuron> neurons)
-        {
-            _neurons = new List<Neuron>();
-            _neurons.AddRange(neurons);
-        }
+        public IEnumerator<Node> GetEnumerator() => _nodes.GetEnumerator();
 
-        public void Add(Neuron neuron)
-        {
-            _neurons.Add(neuron);
-        }
-
-        public void Insert(int index, Neuron neuron)
-        {
-            _neurons.Insert(index, neuron);
-        }
-
-        public void Remove(Neuron neuron)
-        {
-            _neurons.Remove(neuron);
-        }
-
-        public IEnumerator<Neuron> GetEnumerator() => _neurons.GetEnumerator();
-
-        IEnumerator IEnumerable.GetEnumerator() => _neurons.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => _nodes.GetEnumerator();
     }
 }
