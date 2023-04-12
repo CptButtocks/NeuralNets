@@ -1,4 +1,5 @@
 ﻿using NeuralNets.Model.Configuration;
+using NeuralNets.Mutators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +22,10 @@ namespace NeuralNets.Model.Neural
 
         public Genome Reproduce(UnsupervisedTrainingConfiguration configuration)
         {
-            throw new NotImplementedException();
+            Network network = Network.DeepCopy();
+            NeatMutator.Mutate(ref network, configuration);
+
+            return new Genome(Network.DeepCopy(), Generation + 1); ;
         }
     }
 }
