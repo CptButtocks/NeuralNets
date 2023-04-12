@@ -38,7 +38,8 @@ namespace NeuralNets.Model.Trainers
                 }
 
                 //Do some culling on the population in order to select the fittest members and mutate the remaining members
-                MutatePopulation();
+                if(i < iterations - 1)
+                    MutatePopulation();
             }
 
             return _population.OrderByDescending(g => g.Fitness).First();
@@ -67,8 +68,10 @@ namespace NeuralNets.Model.Trainers
                 if (i < elites.Count)
                     newPopulation.Add(elites[i].Reproduce(_configuration));
                 else
-                    newPopulation.Add(_population[i].Reproduce(_configuration));
+                    newPopulation.Add(_population[i - elites.Count].Reproduce(_configuration));
             }
+
+            _population = newPopulation;
         }
 
         private List<Genome> GetElites()

@@ -4,6 +4,7 @@ using NeuralNets.Functions;
 using NeuralNets.Model.Configuration;
 using NeuralNets.Model.Neural;
 using NeuralNets.Model.Neural.Nodes;
+using NeuralNets.Mutators;
 
 Layer<InputNode> inputs = new Layer<InputNode>(0) 
 { 
@@ -20,7 +21,6 @@ Layer<Node> hidden = new(1)
 
 Layer<Node> outputs = new(2)
 {
-    new Node(),
     new Node()
 };
 
@@ -36,16 +36,34 @@ network.Connect(inputs[1], hidden[2]);
 // Layer 2 --> 3
 network.Connect(hidden[0], outputs[0]);
 network.Connect(hidden[1], outputs[0]);
-network.Connect(hidden[1], outputs[1]);
-network.Connect(hidden[2], outputs[1]);
+network.Connect(hidden[2], outputs[0]);
 
 float[] predictions = network.Predict(new float[] { 8, 2 });
 
 UnsupervisedTrainingConfiguration config = new()
 {
-    Population = 10
+    Population = 10,
+    AddConnectionProbability = 0.2f,
+    AddNodeProbability = 0.2f,
+    ModifyWeightProbability = 0.3f,
 };
 
 UnsupervisedTest test = new(network, config);
 
-Console.WriteLine("Network built");
+List<float[]> testInputs = new();
+Random random = new Random();
+for (int i = 0; i < 1000; i++)
+{
+    int a = random.Next(0, 20);
+    int b = random.Next(0, 20);
+
+    testInputs.Add(new float[] { a, b });
+}
+
+Genome elite = test.Train(1000, testInputs.ToArray());
+Console.WriteLine($"Nodes added: {NeatMutator.NodesAdded}");
+Console.WriteLine($"Connection added: {NeatMutator.ConnectionsAdded}");
+Console.WriteLine($"Nodes removed: {NeatMutator.NodesRemoved}");
+Console.WriteLine($"Connections removed: {NeatMutator.ConnectionsRemoved}");
+Console.WriteLine($"Weights modified: {NeatMutator.WeightsModified}");
+Console.WriteLine("All done");

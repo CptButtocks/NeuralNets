@@ -11,8 +11,8 @@ namespace NeuralNets.Model.Configuration
         public float PopulationCutOffPercentage { get; set; } = 0.1f;
         public float PopulationElitismPercentage { get; set; } = 0.1f;
 
-        public float AddNeuronProbability { get; set; } = 0.1f;
-        public float AddSynapseProbability { get; set; } = 0.1f;
+        public float AddNodeProbability { get; set; } = 0.1f;
+        public float AddConnectionProbability { get; set; } = 0.1f;
         public float ModifyWeightProbability { get; set; } = 0.1f;
 
         public float RemoveNeuronProbability { get; set; } = 0.05f;
