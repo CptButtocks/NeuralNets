@@ -42,7 +42,7 @@ float[] predictions = network.Predict(new float[] { 8, 2 });
 
 UnsupervisedTrainingConfiguration config = new()
 {
-    Population = 10,
+    Population = 75,
     AddConnectionProbability = 0.2f,
     AddNodeProbability = 0.2f,
     ModifyWeightProbability = 0.3f,
@@ -60,7 +60,7 @@ for (int i = 0; i < 1000; i++)
     testInputs.Add(new float[] { a, b });
 }
 
-Genome elite = test.Train(1000, testInputs.ToArray());
+Genome elite = test.Train(100, testInputs.ToArray());
 Console.WriteLine($"Nodes added: {NeatMutator.NodesAdded}");
 Console.WriteLine($"Connection added: {NeatMutator.ConnectionsAdded}");
 Console.WriteLine($"Nodes removed: {NeatMutator.NodesRemoved}");
