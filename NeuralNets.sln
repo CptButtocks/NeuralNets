@@ -3,9 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeuralNets", "NeuralNets\NeuralNets.csproj", "{39C1514D-F7BE-4972-86FC-127B3CB5A74C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeuralNets", "NeuralNets\NeuralNets.csproj", "{39C1514D-F7BE-4972-86FC-127B3CB5A74C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeuralNets.Console", "NeuralNets.Console\NeuralNets.Console.csproj", "{5FD7545D-973F-4EF2-A446-9F4DE0CE07AF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeuralNets.Console", "NeuralNets.Console\NeuralNets.Console.csproj", "{5FD7545D-973F-4EF2-A446-9F4DE0CE07AF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeuralNets.Statistics", "NeuralNets.Statistics\NeuralNets.Statistics.csproj", "{8148CB58-4ED2-42B8-A601-4830990FC75F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeuralNets.Maths", "NeuralNets.Maths\NeuralNets.Maths.csproj", "{5D07316E-046E-4C31-A91F-7D785039CE23}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +25,14 @@ Global
 		{5FD7545D-973F-4EF2-A446-9F4DE0CE07AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5FD7545D-973F-4EF2-A446-9F4DE0CE07AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5FD7545D-973F-4EF2-A446-9F4DE0CE07AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8148CB58-4ED2-42B8-A601-4830990FC75F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8148CB58-4ED2-42B8-A601-4830990FC75F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8148CB58-4ED2-42B8-A601-4830990FC75F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8148CB58-4ED2-42B8-A601-4830990FC75F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D07316E-046E-4C31-A91F-7D785039CE23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D07316E-046E-4C31-A91F-7D785039CE23}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D07316E-046E-4C31-A91F-7D785039CE23}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D07316E-046E-4C31-A91F-7D785039CE23}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
